@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.7.6.1">
+  <compounddef id="dir_925f65a958c77e8595efc309c21ccf83" kind="dir">
+    <compoundname>/home/kibum/gr-ieee802-15-4/include/</compoundname>
+    <innerdir refid="dir_3d06e9a3a31b532f5b31cb91740bd32b">/home/kibum/gr-ieee802-15-4/include/ieee802-15-4/</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/kibum/gr-ieee802-15-4/include/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.7.6.1">
+  <compounddef id="classgr_1_1ieee802__15__4_1_1rime__stack" kind="class" prot="public">
+    <compoundname>gr::ieee802_15_4::rime_stack</compoundname>
+    <includes refid="rime__stack_8h" local="no">rime_stack.h</includes>
+      <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classgr_1_1ieee802__15__4_1_1rime__stack_1a07ba440cb470ff942c02f813bdce869a" prot="public" static="no">
+        <type>boost::shared_ptr&lt; <ref refid="classgr_1_1ieee802__15__4_1_1rime__stack" kindref="compound">rime_stack</ref> &gt;</type>
+        <definition>typedef boost::shared_ptr&lt;rime_stack&gt; gr::ieee802_15_4::rime_stack::sptr</definition>
+        <argsstring></argsstring>
+        <name>sptr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kibum/gr-ieee802-15-4/include/ieee802-15-4/rime_stack.h" line="31" bodyfile="/home/kibum/gr-ieee802-15-4/include/ieee802-15-4/rime_stack.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classgr_1_1ieee802__15__4_1_1rime__stack_1a560a8b92e0330143123494798d339248" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classgr_1_1ieee802__15__4_1_1rime__stack_1a07ba440cb470ff942c02f813bdce869a" kindref="member">sptr</ref></type>
+        <definition>static sptr gr::ieee802_15_4::rime_stack::make</definition>
+        <argsstring>(std::vector&lt; uint16_t &gt; bc_channels, std::vector&lt; uint16_t &gt; uc_channels, std::vector&lt; uint16_t &gt; ruc_channels, std::vector&lt; uint8_t &gt; rime_add)</argsstring>
+        <name>make</name>
+        <param>
+          <type>std::vector&lt; uint16_t &gt;</type>
+          <declname>bc_channels</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; uint16_t &gt;</type>
+          <declname>uc_channels</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; uint16_t &gt;</type>
+          <declname>ruc_channels</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; uint8_t &gt;</type>
+          <declname>rime_add</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kibum/gr-ieee802-15-4/include/ieee802-15-4/rime_stack.h" line="35"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/kibum/gr-ieee802-15-4/include/ieee802-15-4/rime_stack.h" line="28" bodyfile="/home/kibum/gr-ieee802-15-4/include/ieee802-15-4/rime_stack.h" bodystart="27" bodyend="36"/>
+    <listofallmembers>
+      <member refid="classgr_1_1ieee802__15__4_1_1rime__stack_1a560a8b92e0330143123494798d339248" prot="public" virt="non-virtual"><scope>gr::ieee802_15_4::rime_stack</scope><name>make</name></member>
+      <member refid="classgr_1_1ieee802__15__4_1_1rime__stack_1a07ba440cb470ff942c02f813bdce869a" prot="public" virt="non-virtual"><scope>gr::ieee802_15_4::rime_stack</scope><name>sptr</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

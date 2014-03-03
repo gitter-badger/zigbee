@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.7.6.1">
+  <compounddef id="namespacegr_1_1ieee802__15__4" kind="namespace">
+    <compoundname>gr::ieee802_15_4</compoundname>
+    <innerclass refid="classgr_1_1ieee802__15__4_1_1access__code__prefixer" prot="public">gr::ieee802_15_4::access_code_prefixer</innerclass>
+    <innerclass refid="classgr_1_1ieee802__15__4_1_1mac" prot="public">gr::ieee802_15_4::mac</innerclass>
+    <innerclass refid="classgr_1_1ieee802__15__4_1_1packet__sink" prot="public">gr::ieee802_15_4::packet_sink</innerclass>
+    <innerclass refid="classgr_1_1ieee802__15__4_1_1rime__stack" prot="public">gr::ieee802_15_4::rime_stack</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/kibum/gr-ieee802-15-4/include/ieee802-15-4/access_code_prefixer.h" line="24"/>
+  </compounddef>
+</doxygen>
