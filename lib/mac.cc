@@ -125,7 +125,7 @@ void generate_mac(const char *buf, int len) {
 
 	// FCF
 	d_msg[0] = 0x41;
-	d_msg[1] = 0x88;
+	d_msg[1] = 0xcc;
 
 	// seq nr
 	d_msg[2] = d_seq_nr++;
