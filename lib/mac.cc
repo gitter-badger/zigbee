@@ -130,14 +130,30 @@ void generate_mac(const char *buf, int len) {
 	// seq nr
 	d_msg[2] = d_seq_nr++;
 
-	// addr info
-	d_msg[3] = 0xcd;
-	d_msg[4] = 0xab;
-	d_msg[5] = 0xff;
-	d_msg[6] = 0xff;
-	d_msg[7] = 0x40;
-	d_msg[8] = 0xe8;
+	// PAN ID
+	d_msg[3] = 0x32;
+	d_msg[4] = 0x33;
 
+	// dest addr 
+	d_msg[5] = 0x70;
+	d_msg[6] = 0x5a;
+	d_msg[7] = 0x63;
+	d_msg[8] = 0x40;
+	d_msg[9] = 0x0;
+	d_msg[10] = 0xa2;
+	d_msg[11] = 0x13;
+	d_msg[12] = 0x0;
+					
+	// source addr
+	d_msg[12] = 0x22;
+	d_msg[13] = 0x5a;
+	d_msg[14] = 0x63;
+	d_msg[15] = 0x40;
+	d_msg[16] = 0x0;
+	d_msg[17] = 0xa2;
+	d_msg[18] = 0x13;
+	d_msg[19] = 0x0;
+								
 	std::memcpy(d_msg + 9, buf, len);
 
 	uint16_t crc = crc16(d_msg, len + 9);
