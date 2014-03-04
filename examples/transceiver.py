@@ -2,7 +2,7 @@
 ##################################################
 # Gnuradio Python Flow Graph
 # Title: Transceiver
-# Generated: Tue Mar  4 22:17:41 2014
+# Generated: Tue Mar  4 23:24:21 2014
 ##################################################
 
 execfile("/home/kibum/.grc_gnuradio/ieee802_15_4_phy.py")
@@ -17,7 +17,6 @@ from grc_gnuradio import wxgui as grc_wxgui
 from optparse import OptionParser
 import foo
 import ieee802_15_4
-import pmt
 import time
 import wx
 
@@ -95,7 +94,6 @@ class transceiver(grc_wxgui.top_block_gui):
         self.ieee802_15_4_mac_0 = ieee802_15_4.mac(True)
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, False)
         self.blocks_socket_pdu_0_0 = blocks.socket_pdu("UDP_SERVER", "", "52001", 10000)
-        self.blocks_message_strobe_0 = blocks.message_strobe(pmt.intern("Hello World!\n"), 1000)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, "/tmp/sensor.pcap", True)
         self.blocks_file_sink_0.set_unbuffered(True)
 
@@ -114,7 +112,6 @@ class transceiver(grc_wxgui.top_block_gui):
         self.msg_connect(self.ieee802_15_4_rime_stack_0, "toMAC", self.ieee802_15_4_mac_0, "app in")
         self.msg_connect(self.ieee802_15_4_mac_0, "app out", self.ieee802_15_4_rime_stack_0, "fromMAC")
         self.msg_connect(self.blocks_socket_pdu_0_0, "pdus", self.ieee802_15_4_rime_stack_0, "bcin")
-        self.msg_connect(self.blocks_message_strobe_0, "strobe", self.ieee802_15_4_rime_stack_0, "bcin")
         self.msg_connect(self.ieee802_15_4_rime_stack_0, "bcout", self.blocks_socket_pdu_0_0, "pdus")
         self.msg_connect(self.ieee802_15_4_phy_0, "rxout", self.foo_wireshark_connector_0, "in")
         self.msg_connect(self.ieee802_15_4_mac_0, "pdu out", self.foo_wireshark_connector_0, "in")

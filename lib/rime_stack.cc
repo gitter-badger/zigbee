@@ -145,14 +145,15 @@ public:
 
 		unsigned char buf[2];
 		std::memcpy(buf, pmt::blob_data(blob), 2);
-		for(rime_connection *conn : d_connections){
-			if(conn->channel() == buf[0] && (conn->channel() >> 8) == buf[1]){
-				conn->unpack(blob);
-				return;
-			}
+		
+		for (rime_connection *conn : d_connections)
+		{
+			// unpack w/o checking channel number
+			conn->unpack(blob);
+			return;
 		}
 	}
-};
+}
 
 rime_stack::sptr
 rime_stack::make(std::vector<uint16_t> bc_channels, std::vector<uint16_t> uc_channels, 
