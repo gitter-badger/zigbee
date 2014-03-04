@@ -153,7 +153,7 @@ public:
 			return;
 		}
 	}
-}
+};
 
 rime_stack::sptr
 rime_stack::make(std::vector<uint16_t> bc_channels, std::vector<uint16_t> uc_channels, 
