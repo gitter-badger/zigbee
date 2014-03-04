@@ -63,7 +63,7 @@ void mac_in(pmt::pmt_t msg) {
 	}
 
 	size_t data_len = pmt::blob_length(blob);
-	if(data_len < 11) {
+	if(data_len < 23) {
 		dout << "MAC: frame too short. Dropping!" << std::endl;
 		return;
 	}
@@ -74,7 +74,7 @@ void mac_in(pmt::pmt_t msg) {
 		return;
 	}
 
-	pmt::pmt_t mac_payload = pmt::make_blob((char*)pmt::blob_data(blob) + 9 , data_len - 9 - 2);
+	pmt::pmt_t mac_payload = pmt::make_blob((char*)pmt::blob_data(blob) + 21 , data_len - 21 - 2);
 
 	message_port_pub(pmt::mp("app out"), pmt::cons(pmt::PMT_NIL, mac_payload));
 }
@@ -135,33 +135,33 @@ void generate_mac(const char *buf, int len) {
 	d_msg[4] = 0x33;
 
 	// dest addr 
-	d_msg[5] = 0x70;
-	d_msg[6] = 0x5a;
-	d_msg[7] = 0x63;
+	d_msg[5] = 0x18;
+	d_msg[6] = 0x5d;
+	d_msg[7] = 0xaa;
 	d_msg[8] = 0x40;
 	d_msg[9] = 0x0;
 	d_msg[10] = 0xa2;
 	d_msg[11] = 0x13;
 	d_msg[12] = 0x0;
-					
+
 	// source addr
-	d_msg[12] = 0x22;
-	d_msg[13] = 0x5a;
-	d_msg[14] = 0x63;
-	d_msg[15] = 0x40;
-	d_msg[16] = 0x0;
-	d_msg[17] = 0xa2;
-	d_msg[18] = 0x13;
-	d_msg[19] = 0x0;
+	d_msg[13] = 0x22;
+	d_msg[14] = 0x5a;
+	d_msg[15] = 0x63;
+	d_msg[16] = 0x40;
+	d_msg[17] = 0x0;
+	d_msg[18] = 0xa2;
+	d_msg[19] = 0x13;
+	d_msg[20] = 0x0;
 								
-	std::memcpy(d_msg + 9, buf, len);
+	std::memcpy(d_msg + 21, buf, len);
 
-	uint16_t crc = crc16(d_msg, len + 9);
+	uint16_t crc = crc16(d_msg, len + 21);
 
-	d_msg[ 9 + len] = crc & 0xFF;
-	d_msg[10 + len] = crc >> 8;
+	d_msg[21  + len] = crc & 0xFF;
+	d_msg[22 + len] = crc >> 8;
 
-	d_msg_len = 9 + len + 2;
+	d_msg_len = 21 + len + 2;
 
 	dout << std::dec << "msg len " << d_msg_len <<
 	        "    len " << len << std::endl;
