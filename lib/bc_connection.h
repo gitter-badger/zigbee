@@ -24,7 +24,8 @@ namespace gr{
 	namespace ieee802_15_4{
 		class GR_IEEE802_15_4_API bc_connection : public rime_connection{
 		private:
-			static const int header_length = 4;
+			/* static const int header_length = 4; */
+			static const int header_length = 0;
 
 		public:
 			static std::array<uint8_t, 256> make_msgbuf(uint16_t channel,
