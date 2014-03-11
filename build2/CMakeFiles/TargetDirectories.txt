@@ -1,7 +1,0 @@
-/home/kibum/gr-ieee802-15-4/build/swig/CMakeFiles/_ieee802_15_4_swig.dir
-/home/kibum/gr-ieee802-15-4/build/swig/CMakeFiles/_ieee802_15_4_swig_doc_tag.dir
-/home/kibum/gr-ieee802-15-4/build/swig/CMakeFiles/_ieee802_15_4_swig_swig_tag.dir
-/home/kibum/gr-ieee802-15-4/build/lib/CMakeFiles/gnuradio-ieee802_15_4.dir
-/home/kibum/gr-ieee802-15-4/build/python/CMakeFiles/pygen_python_74e9c.dir
-/home/kibum/gr-ieee802-15-4/build/swig/CMakeFiles/pygen_swig_c2b1c.dir
-/home/kibum/gr-ieee802-15-4/build/CMakeFiles/uninstall.dir
