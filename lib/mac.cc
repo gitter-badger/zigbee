@@ -29,153 +29,172 @@ public:
 
 #define dout d_debug && std::cout
 
-mac_impl(bool debug) :
-	block ("mac",
-			gr::io_signature::make(0, 0, 0),
-			gr::io_signature::make(0, 0, 0)),
-			d_msg_offset(0),
-			d_seq_nr(0),
-			d_debug(debug) {
+	mac_impl(bool debug) :
+		block ("mac",
+			   gr::io_signature::make(0, 0, 0),
+			   gr::io_signature::make(0, 0, 0)),
+		d_msg_offset(0),
+		d_seq_nr(0),
+		d_debug(debug) {
 
-	message_port_register_in(pmt::mp("app in"));
-	set_msg_handler(pmt::mp("app in"), boost::bind(&mac_impl::app_in, this, _1));
-	message_port_register_in(pmt::mp("pdu in"));
-	set_msg_handler(pmt::mp("pdu in"), boost::bind(&mac_impl::mac_in, this, _1));
+		message_port_register_in(pmt::mp("app in"));
+		set_msg_handler(pmt::mp("app in"), boost::bind(&mac_impl::app_in, this, _1));
+		message_port_register_in(pmt::mp("pdu in"));
+		set_msg_handler(pmt::mp("pdu in"), boost::bind(&mac_impl::mac_in, this, _1));
 
-	message_port_register_out(pmt::mp("app out"));
-	message_port_register_out(pmt::mp("pdu out"));
-}
-
-~mac_impl(void) {
-}
-
-void mac_in(pmt::pmt_t msg) {
-	pmt::pmt_t blob;
-
-	if(pmt::is_eof_object(msg)) {
-		message_port_pub(pmt::mp("pdu out"), pmt::PMT_EOF);
-		detail().get()->set_done(true);
-		return;
-	} else if(pmt::is_pair(msg)) {
-		blob = pmt::cdr(msg);
-	} else {
-		assert(false);
+		message_port_register_out(pmt::mp("app out"));
+		message_port_register_out(pmt::mp("pdu out"));
 	}
 
-	size_t data_len = pmt::blob_length(blob);
-	if(data_len < 23) {
-		dout << "MAC: frame too short. Dropping!" << std::endl;
-		return;
+	~mac_impl(void) {
 	}
 
-	uint16_t crc = crc16((char*)pmt::blob_data(blob), data_len);
-	if(crc) {
-		dout << "MAC: wrong crc. Dropping packet!" << std::endl;
-		return;
+	void mac_in(pmt::pmt_t msg) {
+		pmt::pmt_t blob;
+
+		if(pmt::is_eof_object(msg)) {
+			message_port_pub(pmt::mp("pdu out"), pmt::PMT_EOF);
+			detail().get()->set_done(true);
+			return;
+		} else if(pmt::is_pair(msg)) {
+			blob = pmt::cdr(msg);
+		} else {
+			assert(false);
+		}
+////////////////////////////////////////////////////////////////////////////////////
+
+		dout << "**********************************" << std::endl;
+		//dout << "msg : " << pmt::print(msg) << std::endl;
+		//dout << "blob : " << pmt::print(blob) << std::endl;
+
+		size_t blob_len = pmt::blob_length(blob);
+		char temp[blob_len];
+		memcpy(temp, (char*)pmt::blob_data(blob), blob_len);
+
+		for(int i = 0; i < blob_len; i++)
+		{
+			dout << std::setfill('0') << std::setw(2) << std::hex << ((unsigned int)temp[i] & 0xFF) << std::dec << " ";
+			if(i % 16 == 15)
+				dout << std::endl;
+		}
+		dout << std::endl;
+
+////////////////////////////////////////////////////////////////////////////////////
+		
+		size_t data_len = pmt::blob_length(blob);
+		if(data_len < 23) {
+			dout << "MAC: frame too short. Dropping!" << std::endl;
+			return;
+		}
+
+		uint16_t crc = crc16((char*)pmt::blob_data(blob), data_len);
+		if(crc) {
+			dout << "MAC: wrong crc. Dropping packet!" << std::endl;
+			return;
+		}
+
+		pmt::pmt_t mac_payload = pmt::make_blob((char*)pmt::blob_data(blob) + 21 , data_len - 21 - 2);
+
+		message_port_pub(pmt::mp("app out"), pmt::cons(pmt::PMT_NIL, mac_payload));
 	}
 
-	pmt::pmt_t mac_payload = pmt::make_blob((char*)pmt::blob_data(blob) + 21 , data_len - 21 - 2);
+	void app_in(pmt::pmt_t msg) {
+		pmt::pmt_t blob;
+		if(pmt::is_eof_object(msg)) {
+			dout << "MAC: exiting" << std::endl;
+			detail().get()->set_done(true);
+			return;
+		} else if(pmt::is_blob(msg)) {
+			blob = msg;
+		} else if(pmt::is_pair(msg)) {
+			blob = pmt::cdr(msg);
+		} else {
+			dout << "MAC: unknown input" << std::endl;
+			return;
+		}
 
-	message_port_pub(pmt::mp("app out"), pmt::cons(pmt::PMT_NIL, mac_payload));
-}
+		dout << "MAC: received new message" << std::endl;
+		dout << "message length " << pmt::blob_length(blob) << std::endl;
 
-void app_in(pmt::pmt_t msg) {
-	pmt::pmt_t blob;
-	if(pmt::is_eof_object(msg)) {
-		dout << "MAC: exiting" << std::endl;
-		detail().get()->set_done(true);
-		return;
-	} else if(pmt::is_blob(msg)) {
-		blob = msg;
-	} else if(pmt::is_pair(msg)) {
-		blob = pmt::cdr(msg);
-	} else {
-		dout << "MAC: unknown input" << std::endl;
-		return;
+		generate_mac((const char*)pmt::blob_data(blob), pmt::blob_length(blob));
+		print_message();
+		message_port_pub(pmt::mp("pdu out"), pmt::cons(pmt::PMT_NIL,
+													   pmt::make_blob(d_msg, d_msg_len)));
 	}
 
-	dout << "MAC: received new message" << std::endl;
-	dout << "message length " << pmt::blob_length(blob) << std::endl;
+	uint16_t crc16(char *buf, int len) {
+		uint16_t crc = 0;
 
-	generate_mac((const char*)pmt::blob_data(blob), pmt::blob_length(blob));
-	print_message();
-	message_port_pub(pmt::mp("pdu out"), pmt::cons(pmt::PMT_NIL,
-			pmt::make_blob(d_msg, d_msg_len)));
-}
-
-uint16_t crc16(char *buf, int len) {
-	uint16_t crc = 0;
-
-	for(int i = 0; i < len; i++) {
-		for(int k = 0; k < 8; k++) {
-			int input_bit = (!!(buf[i] & (1 << k)) ^ (crc & 1));
-			crc = crc >> 1;
-			if(input_bit) {
-				crc ^= (1 << 15);
-				crc ^= (1 << 10);
-				crc ^= (1 <<  3);
+		for(int i = 0; i < len; i++) {
+			for(int k = 0; k < 8; k++) {
+				int input_bit = (!!(buf[i] & (1 << k)) ^ (crc & 1));
+				crc = crc >> 1;
+				if(input_bit) {
+					crc ^= (1 << 15);
+					crc ^= (1 << 10);
+					crc ^= (1 <<  3);
+				}
 			}
 		}
+
+		return crc;
 	}
 
-	return crc;
-}
+	void generate_mac(const char *buf, int len) {
 
-void generate_mac(const char *buf, int len) {
+		// FCF
+		d_msg[0] = 0x41;
+		d_msg[1] = 0xcc;
 
-	// FCF
-	d_msg[0] = 0x41;
-	d_msg[1] = 0xcc;
+		// seq nr
+		d_msg[2] = d_seq_nr++;
 
-	// seq nr
-	d_msg[2] = d_seq_nr++;
+		// PAN ID
+		d_msg[3] = 0x32;
+		d_msg[4] = 0x33;
 
-	// PAN ID
-	d_msg[3] = 0x32;
-	d_msg[4] = 0x33;
+		// dest addr 
+		d_msg[5] = 0x18;
+		d_msg[6] = 0x5d;
+		d_msg[7] = 0xaa;
+		d_msg[8] = 0x40;
+		d_msg[9] = 0x0;
+		d_msg[10] = 0xa2;
+		d_msg[11] = 0x13;
+		d_msg[12] = 0x0;
 
-	// dest addr 
-	d_msg[5] = 0x18;
-	d_msg[6] = 0x5d;
-	d_msg[7] = 0xaa;
-	d_msg[8] = 0x40;
-	d_msg[9] = 0x0;
-	d_msg[10] = 0xa2;
-	d_msg[11] = 0x13;
-	d_msg[12] = 0x0;
-
-	// source addr
-	d_msg[13] = 0x22;
-	d_msg[14] = 0x5a;
-	d_msg[15] = 0x63;
-	d_msg[16] = 0x40;
-	d_msg[17] = 0x0;
-	d_msg[18] = 0xa2;
-	d_msg[19] = 0x13;
-	d_msg[20] = 0x0;
+		// source addr
+		d_msg[13] = 0x22;
+		d_msg[14] = 0x5a;
+		d_msg[15] = 0x63;
+		d_msg[16] = 0x40;
+		d_msg[17] = 0x0;
+		d_msg[18] = 0xa2;
+		d_msg[19] = 0x13;
+		d_msg[20] = 0x0;
 								
-	std::memcpy(d_msg + 21, buf, len);
+		std::memcpy(d_msg + 21, buf, len);
 
-	uint16_t crc = crc16(d_msg, len + 21);
+		uint16_t crc = crc16(d_msg, len + 21);
 
-	d_msg[21  + len] = crc & 0xFF;
-	d_msg[22 + len] = crc >> 8;
+		d_msg[21 + len] = crc & 0xFF;
+		d_msg[22 + len] = crc >> 8;
 
-	d_msg_len = 21 + len + 2;
+		d_msg_len = 21 + len + 2;
 
-	dout << std::dec << "msg len " << d_msg_len <<
+		dout << std::dec << "msg len " << d_msg_len <<
 	        "    len " << len << std::endl;
-}
-
-void print_message() {
-	for(int i = 0; i < d_msg_len; i++) {
-		dout << std::setfill('0') << std::setw(2) << std::hex << ((unsigned int)d_msg[i] & 0xFF) << std::dec << " ";
-		if(i % 16 == 15) {
-			dout << std::endl;
-		}
 	}
-	dout << std::endl;
-}
+
+	void print_message() {
+		for(int i = 0; i < d_msg_len; i++) {
+			dout << std::setfill('0') << std::setw(2) << std::hex << ((unsigned int)d_msg[i] & 0xFF) << std::dec << " ";
+			if(i % 16 == 15) {
+				dout << std::endl;
+			}
+		}
+		dout << std::endl;
+	}
 
 private:
 	bool        d_debug;
