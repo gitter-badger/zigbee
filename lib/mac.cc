@@ -63,7 +63,7 @@ public:
 		}
 ////////////////////////////////////////////////////////////////////////////////////
 
-		dout << "**********************************" << std::endl;
+		dout << std::endl << "**********************************" << std::endl;
 		//dout << "msg : " << pmt::print(msg) << std::endl;
 		//dout << "blob : " << pmt::print(blob) << std::endl;
 
@@ -71,18 +71,28 @@ public:
 		char temp[blob_len];
 		memcpy(temp, (char*)pmt::blob_data(blob), blob_len);
 
-		for(int i = 0; i < blob_len; i++)
+		/*
+		  for(int i = 0; i < blob_len; i++)
+		  {
+		  dout << std::setfill('0') << std::setw(2) << std::hex << ((unsigned int)temp[i] & 0xFF) << std::dec << " ";
+		  if(i % 16 == 15)
+		  dout << std::endl;
+		  }
+		*/
+
+		if (blob_len > 5)
 		{
-			dout << std::setfill('0') << std::setw(2) << std::hex << ((unsigned int)temp[i] & 0xFF) << std::dec << " ";
-			if(i % 16 == 15)
-				dout << std::endl;
+			for (int i = 22; i < 27; i++)
+			{
+				dout << std::dec << temp[i] << " ";
+			}
+			dout << std::endl;
 		}
-		dout << std::endl;
 
 ////////////////////////////////////////////////////////////////////////////////////
 		
 		size_t data_len = pmt::blob_length(blob);
-		if(data_len < 23) {
+		if(data_len < 23) { 
 			dout << "MAC: frame too short. Dropping!" << std::endl;
 			return;
 		}
@@ -141,49 +151,148 @@ public:
 	}
 
 	void generate_mac(const char *buf, int len) {
-
-		// FCF
-		d_msg[0] = 0x41;
+		int buflen = len;
+		
+        /* FCF */
+		d_msg[0] = 0x61;
 		d_msg[1] = 0xcc;
 
-		// seq nr
+		/* seq nr */
 		d_msg[2] = d_seq_nr++;
 
-		// PAN ID
-		d_msg[3] = 0x32;
-		d_msg[4] = 0x33;
+		/* PAN ID */
+		d_msg[3] = 0x17;
+		d_msg[4] = 0x04;
 
-		// dest addr 
-		d_msg[5] = 0x18;
-		d_msg[6] = 0x5d;
-		d_msg[7] = 0xaa;
-		d_msg[8] = 0x40;
+		/* dest addr */
+		d_msg[5] = 0x63;
+		d_msg[6] = 0x0a;
+		d_msg[7] = 0x0;
+		d_msg[8] = 0x0;
 		d_msg[9] = 0x0;
-		d_msg[10] = 0xa2;
-		d_msg[11] = 0x13;
-		d_msg[12] = 0x0;
+		d_msg[10] = 0x55;
+		d_msg[11] = 0x43;
+		d_msg[12] = 0x57;
 
-		// source addr
-		d_msg[13] = 0x22;
-		d_msg[14] = 0x5a;
-		d_msg[15] = 0x63;
-		d_msg[16] = 0x40;
+		/* source addr */
+		d_msg[13] = 0x17;
+		d_msg[14] = 0x04;
+		d_msg[15] = 0x0;
+		d_msg[16] = 0x0;
 		d_msg[17] = 0x0;
-		d_msg[18] = 0xa2;
-		d_msg[19] = 0x13;
-		d_msg[20] = 0x0;
-								
-		std::memcpy(d_msg + 21, buf, len);
+		d_msg[18] = 0x55;
+		d_msg[19] = 0x43;
+		d_msg[20] = 0x44;
 
-		uint16_t crc = crc16(d_msg, len + 21);
+		if (buf[0] == '#')
+		{
+			buflen = 24;
 
-		d_msg[21 + len] = crc & 0xFF;
-		d_msg[22 + len] = crc >> 8;
+			d_msg[21] = 0x53;	// payload 1
 
-		d_msg_len = 21 + len + 2;
+			/* commmand O,a,F */
+ 			d_msg[22] = buf[1];
+			
+			/* seq number in decimal */
+			d_msg[23] = buf[2];
+			d_msg[24] = buf[3];
+			d_msg[25] = buf[4];
+			d_msg[26] = buf[5]; 
+
+			/* source addr */
+			d_msg[27] = 0x17;
+			d_msg[28] = 0x04;
+			d_msg[29] = 0x0;
+			d_msg[30] = 0x0;
+			d_msg[31] = 0x0;
+			d_msg[32] = 0x55;
+			d_msg[33] = 0x43;
+			d_msg[34] = 0x44;
+
+			/* dest addr */
+			d_msg[35] = 0x63;
+			d_msg[36] = 0x0a;
+			d_msg[37] = 0x0;
+			d_msg[38] = 0x0;
+			d_msg[39] = 0x0;
+			d_msg[40] = 0x55;
+			d_msg[41] = 0x43;
+			d_msg[42] = 0x57;
+
+			/* PAN ID */
+			d_msg[43] = 0x04;
+			d_msg[44] = 0x17;
+		}
+		else if (buf[0] == '!')
+		{
+			buflen = 35;
+
+			d_msg[21] = 0x57;	// payload 1
+
+			/* commmand O,a,F */
+ 			d_msg[22] = 0x50;
+			
+			/* seq number in decimal */
+			d_msg[23] = buf[1];
+			d_msg[24] = buf[2];
+			d_msg[25] = buf[3];
+			d_msg[26] = buf[4]; 
+
+			/* source addr */
+			d_msg[27] = 0x63;
+			d_msg[28] = 0x0a;
+			d_msg[29] = 0x0;
+			d_msg[30] = 0x0;
+			d_msg[31] = 0x0;
+			d_msg[32] = 0x55;
+			d_msg[33] = 0x43;
+			d_msg[34] = 0x57;
+			
+			/* dest addr */
+			d_msg[35] = 0x17;
+			d_msg[36] = 0x04;
+			d_msg[37] = 0x0;
+			d_msg[38] = 0x0;
+			d_msg[39] = 0x0;
+			d_msg[40] = 0x55;
+			d_msg[41] = 0x43;
+			d_msg[42] = 0x44;
+
+			d_msg[43] = 0x30;
+
+			/* power info1 */
+			d_msg[44] = buf[5];
+			d_msg[45] = buf[6];
+			d_msg[46] = buf[7];
+
+			/* zero padding */
+			d_msg[47] = 0x30;
+			d_msg[48] = 0x30;
+			d_msg[49] = 0x30;
+			d_msg[50] = 0x30;
+			
+			/* power info2 */
+			d_msg[51] = buf[8];
+			d_msg[52] = buf[9];
+			d_msg[53] = buf[10];
+			d_msg[54] = buf[11];
+			d_msg[55] = buf[12];
+			
+		}			
+	   	else
+		{
+			std::memcpy(d_msg + 21, buf, buflen);
+		}
+
+		uint16_t crc = crc16(d_msg, buflen + 21);
+
+		d_msg[21 + buflen] = crc & 0xFF;
+		d_msg[22 + buflen] = crc >> 8;
+
+		d_msg_len = 21 + buflen + 2;
 
 		dout << std::dec << "msg len " << d_msg_len <<
-	        "    len " << len << std::endl;
+	        "    len " << buflen << std::endl;
 	}
 
 	void print_message() {
