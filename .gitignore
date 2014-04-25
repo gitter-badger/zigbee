@@ -1,3 +1,4 @@
+.gitignore
 build/*
 *.pyc
 contiki/obj_sky/*
@@ -9,4 +10,5 @@ contiki/*.a
 contiki/*.map
 contiki/*.ihex
 contiki/*.sky
-example/
+*#*#
+examples/
