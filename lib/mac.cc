@@ -223,62 +223,6 @@ public:
 			d_msg[43] = 0x04;
 			d_msg[44] = 0x17;
 		}
-		else if (buf[0] == '!')
-		{
-			buflen = 35;
-
-			d_msg[21] = 0x57;	// payload 1
-
-			/* commmand O,a,F */
- 			d_msg[22] = 0x50;
-			
-			/* seq number in decimal */
-			d_msg[23] = buf[1];
-			d_msg[24] = buf[2];
-			d_msg[25] = buf[3];
-			d_msg[26] = buf[4]; 
-
-			/* source addr */
-			d_msg[27] = 0x63;
-			d_msg[28] = 0x0a;
-			d_msg[29] = 0x0;
-			d_msg[30] = 0x0;
-			d_msg[31] = 0x0;
-			d_msg[32] = 0x55;
-			d_msg[33] = 0x43;
-			d_msg[34] = 0x57;
-			
-			/* dest addr */
-			d_msg[35] = 0x17;
-			d_msg[36] = 0x04;
-			d_msg[37] = 0x0;
-			d_msg[38] = 0x0;
-			d_msg[39] = 0x0;
-			d_msg[40] = 0x55;
-			d_msg[41] = 0x43;
-			d_msg[42] = 0x44;
-
-			d_msg[43] = 0x30;
-
-			/* power info1 */
-			d_msg[44] = buf[5];
-			d_msg[45] = buf[6];
-			d_msg[46] = buf[7];
-
-			/* zero padding */
-			d_msg[47] = 0x30;
-			d_msg[48] = 0x30;
-			d_msg[49] = 0x30;
-			d_msg[50] = 0x30;
-			
-			/* power info2 */
-			d_msg[51] = buf[8];
-			d_msg[52] = buf[9];
-			d_msg[53] = buf[10];
-			d_msg[54] = buf[11];
-			d_msg[55] = buf[12];
-			
-		}			
 	   	else
 		{
 			std::memcpy(d_msg + 21, buf, buflen);
